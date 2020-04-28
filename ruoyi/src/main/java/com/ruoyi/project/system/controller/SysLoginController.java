@@ -56,17 +56,6 @@ public class SysLoginController
         return ajax;
     }
 
-    @PostMapping("/auth")
-    public AjaxResult auth(@RequestParam(name = "username", required = true) String szUserName
-            , @RequestParam(name = "password", required = true) String szPwd)
-    {
-        AjaxResult ajax = AjaxResult.success();
-        // 生成令牌
-        String token = loginService.auth(szUserName, szPwd);
-        ajax.put(Constants.TOKEN, token);
-        return ajax;
-    }
-
     /**
      * 获取用户信息
      * 

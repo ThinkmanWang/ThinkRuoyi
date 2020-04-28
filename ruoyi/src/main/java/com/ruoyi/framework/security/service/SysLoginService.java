@@ -1,6 +1,8 @@
 package com.ruoyi.framework.security.service;
 
 import javax.annotation.Resource;
+
+import com.ruoyi.project.system.service.impl.SysUserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -35,8 +37,12 @@ public class SysLoginService
     @Autowired
     private RedisCache redisCache;
 
-    public String auth(String username, String password) {
-        return login(username, password, "", "", false);
+    @Autowired
+    private UserDetailsServiceImpl userDetailsService;
+
+    public String auth(String szAppId, String szSecret) {
+        LoginUser loginUser = (LoginUser) userDetailsService.loadUserByUsername("admin");
+        return tokenService.createToken(loginUser);
     }
 
     /**
