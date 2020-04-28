@@ -14,7 +14,7 @@ public class AuthController {
     @Autowired
     private SysLoginService loginService;
 
-    @PostMapping("/api/auth")
+    @PostMapping("/auth/token")
     public AjaxResult auth(@RequestParam(name = "appid", required = true) String szAppId
             , @RequestParam(name = "secret", required = true) String szSecret)
     {
