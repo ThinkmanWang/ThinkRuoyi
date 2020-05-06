@@ -41,7 +41,7 @@ public class SysLoginService
     private UserDetailsServiceImpl userDetailsService;
 
     public String auth(String szAppId, String szSecret) {
-        LoginUser loginUser = (LoginUser) userDetailsService.loadUserByUsername("admin");
+        LoginUser loginUser = (LoginUser) userDetailsService.loadUserByUsername("thinkman");
         return tokenService.createToken(loginUser);
     }
 
