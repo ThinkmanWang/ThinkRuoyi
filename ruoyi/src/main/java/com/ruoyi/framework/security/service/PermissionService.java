@@ -1,6 +1,9 @@
 package com.ruoyi.framework.security.service;
 
 import java.util.Set;
+
+import com.ruoyi.project.system.service.ISysMenuService;
+import com.ruoyi.project.system.service.ISysRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -30,6 +33,12 @@ public class PermissionService
     @Autowired
     private TokenService tokenService;
 
+    @Autowired
+    private ISysMenuService menuService;
+
+    @Autowired
+    private ISysRoleService roleService;
+
     /**
      * 验证用户是否具备某权限
      * 
@@ -47,7 +56,7 @@ public class PermissionService
         {
             return false;
         }
-        return hasPermissions(loginUser.getPermissions(), permission);
+        return hasPermissions(loginUser, permission);
     }
 
     /**
@@ -81,7 +90,7 @@ public class PermissionService
         Set<String> authorities = loginUser.getPermissions();
         for (String permission : permissions.split(PERMISSION_DELIMETER))
         {
-            if (permission != null && hasPermissions(authorities, permission))
+            if (permission != null && hasPermissions(loginUser, permission))
             {
                 return true;
             }
@@ -102,18 +111,21 @@ public class PermissionService
             return false;
         }
         LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
-        if (StringUtils.isNull(loginUser) || CollectionUtils.isEmpty(loginUser.getUser().getRoles()))
+        Set<String> setRole = roleService.selectRolePermissionByUserId(loginUser.getUser().getUserId());
+
+        if (StringUtils.isNull(loginUser) || CollectionUtils.isEmpty(setRole))
         {
             return false;
         }
-        for (SysRole sysRole : loginUser.getUser().getRoles())
+
+        for (String roleKey : setRole)
         {
-            String roleKey = sysRole.getRoleKey();
             if (SUPER_ADMIN.contains(roleKey) || roleKey.contains(StringUtils.trim(role)))
             {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -141,10 +153,13 @@ public class PermissionService
             return false;
         }
         LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
-        if (StringUtils.isNull(loginUser) || CollectionUtils.isEmpty(loginUser.getUser().getRoles()))
+        Set<String> setRole = roleService.selectRolePermissionByUserId(loginUser.getUser().getUserId());
+
+        if (StringUtils.isNull(loginUser) || CollectionUtils.isEmpty(setRole))
         {
             return false;
         }
+
         for (String role : roles.split(ROLE_DELIMETER))
         {
             if (hasRole(role))
@@ -152,6 +167,7 @@ public class PermissionService
                 return true;
             }
         }
+
         return false;
     }
 
@@ -165,5 +181,11 @@ public class PermissionService
     private boolean hasPermissions(Set<String> permissions, String permission)
     {
         return permissions.contains(ALL_PERMISSION) || permissions.contains(StringUtils.trim(permission));
+    }
+
+    private boolean hasPermissions(LoginUser user, String permission)
+    {
+        return user.getPermissions().contains(ALL_PERMISSION)
+                || menuService.selectMenuPermsByUserId(user.getUser().getUserId()).contains(permission);
     }
 }
