@@ -153,9 +153,12 @@ public class PermissionService
             return false;
         }
         LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
-        Set<String> setRole = roleService.selectRolePermissionByUserId(loginUser.getUser().getUserId());
+        if (StringUtils.isNull(loginUser)) {
+            return false;
+        }
 
-        if (StringUtils.isNull(loginUser) || CollectionUtils.isEmpty(setRole))
+        Set<String> setRole = roleService.selectRolePermissionByUserId(loginUser.getUser().getUserId());
+        if (CollectionUtils.isEmpty(setRole))
         {
             return false;
         }
