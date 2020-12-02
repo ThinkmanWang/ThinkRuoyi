@@ -1,8 +1,8 @@
 FROM maven as build-stage
 WORKDIR /app
 COPY . .
-COPY ./src/main/resources/application.yml.oray /app/src/main/resources/application.yml
-COPY ./src/main/resources/application-druid.yml.oray /app/src/main/resources/application-druid.yml
+#COPY ./src/main/resources/application.yml.oray /app/src/main/resources/application.yml
+#COPY ./src/main/resources/application-druid.yml.oray /app/src/main/resources/application-druid.yml
 
 RUN mvn clean package -Dmaven.test.skip=true
 RUN ls /app
