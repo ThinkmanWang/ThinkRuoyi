@@ -1,6 +1,6 @@
 version: "2.0"
 services:
-  think-vue-hello:
+  think-ruoyi-ui:
     build:
       context: .
       dockerfile: Dockerfile
