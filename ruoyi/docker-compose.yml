@@ -1,11 +1,15 @@
 version: "2.0"
+
+networks:
+  think_network:
+    external: true
+
 services:
   think-ruoyi:
     build:
       context: .
       dockerfile: Dockerfile
-    ports:
-      - '8080:8080'
+    container_name: think-ruoyi
     volumes:
       - ./logs:/logs
       - ./localtime:/etc/localtime:ro
@@ -13,4 +17,6 @@ services:
     environment:
       - "TZ=Asia/Shanghai"
     command: bash -c "java -Xms2048m -Xmx2048m -XX:PermSize=2048m -XX:MaxPermSize=2048m -XX:MaxNewSize=1024m -jar /ruoyi.jar"
+    networks:
+      - think_network
     restart: always
