@@ -120,8 +120,11 @@ export const constantRoutes = [
   }
 ]
 
+let baseUrl = '/ruoyi/'
+
 export default new Router({
   mode: 'history', // 去掉url中的#
+  base: baseUrl,
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRoutes
 })
