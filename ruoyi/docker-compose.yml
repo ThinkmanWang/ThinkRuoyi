@@ -9,7 +9,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: think-ruoyi
+    container_name: think-ruoyi-api
 #    volumes:
 #      - ./logs:/logs
 #      - ./localtime:/etc/localtime:ro
