@@ -1,0 +1,17 @@
+version: "2.0"
+
+networks:
+  think_network:
+    external: true
+
+services:
+  think-ruoyi-ui:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: think-ruoyi-ui
+    networks:
+      - think_network
+
+    restart: always
+
