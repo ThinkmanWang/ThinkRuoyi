@@ -43,12 +43,11 @@ export function delType(dictId) {
   })
 }
 
-// 导出字典类型
-export function exportType(query) {
+// 刷新字典缓存
+export function refreshCache() {
   return request({
-    url: '/system/dict/type/export',
-    method: 'get',
-    params: query
+    url: '/system/dict/type/refreshCache',
+    method: 'delete'
   })
 }
 

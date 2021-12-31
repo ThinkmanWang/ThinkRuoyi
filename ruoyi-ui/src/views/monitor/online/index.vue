@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" :inline="true">
+    <el-form :model="queryParams" ref="queryForm" :inline="true" label-width="68px">
       <el-form-item label="登录地址" prop="ipaddr">
         <el-input
           v-model="queryParams.ipaddr"
@@ -23,8 +23,8 @@
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
       </el-form-item>
-    </el-form>
 
+    </el-form>
     <el-table
       v-loading="loading"
       :data="list.slice((pageNum-1)*pageSize,pageNum*pageSize)"
@@ -39,7 +39,7 @@
       <el-table-column label="登录名称" align="center" prop="userName" :show-overflow-tooltip="true" />
       <el-table-column label="部门名称" align="center" prop="deptName" />
       <el-table-column label="主机" align="center" prop="ipaddr" :show-overflow-tooltip="true" />
-      <el-table-column label="登录地点" align="center" prop="loginLocation" />
+      <el-table-column label="登录地点" align="center" prop="loginLocation" :show-overflow-tooltip="true" />
       <el-table-column label="浏览器" align="center" prop="browser" />
       <el-table-column label="操作系统" align="center" prop="os" />
       <el-table-column label="登录时间" align="center" prop="loginTime" width="180">
@@ -111,16 +111,12 @@ export default {
     },
     /** 强退按钮操作 */
     handleForceLogout(row) {
-      this.$confirm('是否确认强退名称为"' + row.userName + '"的数据项?', "警告", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning"
-        }).then(function() {
-          return forceLogout(row.tokenId);
-        }).then(() => {
-          this.getList();
-          this.msgSuccess("强退成功");
-        }).catch(function() {});
+      this.$modal.confirm('是否确认强退名称为"' + row.userName + '"的用户？').then(function() {
+        return forceLogout(row.tokenId);
+      }).then(() => {
+        this.getList();
+        this.$modal.msgSuccess("强退成功");
+      }).catch(() => {});
     }
   }
 };

@@ -1,15 +1,15 @@
 'use strict'
 const path = require('path')
-const defaultSettings = require('./src/settings.js')
 
 function resolve(dir) {
   return path.join(__dirname, dir)
 }
 
-const name = defaultSettings.title || '若依管理系统' // 标题
+const CompressionPlugin = require('compression-webpack-plugin')
+
+const name = process.env.VUE_APP_TITLE || '若依管理系统' // 网页标题
 
 const port = process.env.port || process.env.npm_config_port || 80 // 端口
-const assetsPublicPath = '/ruoyi/'
 
 // vue.config.js 配置说明
 //官方vue.config.js 参考文档 https://cli.vuejs.org/zh/config/#css-loaderoptions
@@ -18,7 +18,7 @@ module.exports = {
   // 部署生产环境和开发环境下的URL。
   // 默认情况下，Vue CLI 会假设你的应用是被部署在一个域名的根路径上
   // 例如 https://www.ruoyi.vip/。如果应用被部署在一个子路径上，你就需要用这个选项指定这个子路径。例如，如果你的应用被部署在 https://www.ruoyi.vip/admin/，则设置 baseUrl 为 /admin/。
-  publicPath: process.env.NODE_ENV === "production" ? "/ruoyi/" : "/",
+  publicPath: process.env.NODE_ENV === "production" ? "/ruoyi" : "/",
   // 在npm run build 或 yarn build 时 ，生成文件的目录名称（要和baseUrl的生产环境路径一致）（默认dist）
   outputDir: 'dist',
   // 用于放置生成的静态资源 (js、css、img、fonts) 的；（项目打包之后，静态资源会放在这个文件夹下）
@@ -31,10 +31,11 @@ module.exports = {
   devServer: {
     host: '0.0.0.0',
     port: port,
+    open: true,
     proxy: {
       // detail: https://cli.vuejs.org/config/#devserver-proxy
       [process.env.VUE_APP_BASE_API]: {
-        target: `http://172.16.0.2/ruoyi-api/`,
+        target: `http://localhost:8080`,
         changeOrigin: true,
         pathRewrite: {
           ['^' + process.env.VUE_APP_BASE_API]: ''
@@ -43,13 +44,29 @@ module.exports = {
     },
     disableHostCheck: true
   },
+  css: {
+    loaderOptions: {
+      sass: {
+        sassOptions: { outputStyle: "expanded" }
+      }
+    }
+  },
   configureWebpack: {
     name: name,
     resolve: {
       alias: {
         '@': resolve('src')
       }
-    }
+    },
+    plugins: [
+      // http://doc.ruoyi.vip/ruoyi-vue/other/faq.html#使用gzip解压缩静态文件
+      new CompressionPlugin({
+        test: /\.(js|css|html)?$/i,     // 压缩文件格式
+        filename: '[path].gz[query]',   // 压缩后的文件名
+        algorithm: 'gzip',              // 使用gzip压缩
+        minRatio: 0.8                   // 压缩率小于1才会压缩
+      })
+    ],
   },
   chainWebpack(config) {
     config.plugins.delete('preload') // TODO: need test
@@ -71,23 +88,6 @@ module.exports = {
         symbolId: 'icon-[name]'
       })
       .end()
-
-    // set preserveWhitespace
-    config.module
-      .rule('vue')
-      .use('vue-loader')
-      .loader('vue-loader')
-      .tap(options => {
-        options.compilerOptions.preserveWhitespace = true
-        return options
-      })
-      .end()
-
-    config
-      // https://webpack.js.org/configuration/devtool/#development
-      .when(process.env.NODE_ENV === 'development',
-        config => config.devtool('cheap-source-map')
-      )
 
     config
       .when(process.env.NODE_ENV !== 'development',
@@ -124,7 +124,11 @@ module.exports = {
                 }
               }
             })
-          config.optimization.runtimeChunk('single')
+          config.optimization.runtimeChunk('single'),
+          {
+             from: path.resolve(__dirname, './public/robots.txt'), //防爬虫文件
+             to: './' //到根目录下
+          }
         }
       )
   }

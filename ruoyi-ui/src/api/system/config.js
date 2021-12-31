@@ -51,11 +51,10 @@ export function delConfig(configId) {
   })
 }
 
-// 导出参数
-export function exportConfig(query) {
+// 刷新参数缓存
+export function refreshCache() {
   return request({
-    url: '/system/config/export',
-    method: 'get',
-    params: query
+    url: '/system/config/refreshCache',
+    method: 'delete'
   })
 }

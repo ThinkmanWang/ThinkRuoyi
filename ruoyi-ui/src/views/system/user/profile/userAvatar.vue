@@ -1,7 +1,7 @@
 <template>
   <div>
-    <img v-bind:src="options.img" @click="editCropper()" title="点击上传头像" class="img-circle img-lg" />
-    <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body>
+    <div class="user-info-head" @click="editCropper()"><img v-bind:src="options.img" title="点击上传头像" class="img-circle img-lg" /></div>
+    <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body @opened="modalOpened"  @close="closeDialog">
       <el-row>
         <el-col :xs="24" :md="12" :style="{height: '350px'}">
           <vue-cropper
@@ -13,6 +13,7 @@
             :autoCropHeight="options.autoCropHeight"
             :fixedBox="options.fixedBox"
             @realTime="realTime"
+            v-if="visible"
           />
         </el-col>
         <el-col :xs="24" :md="12" :style="{height: '350px'}">
@@ -26,7 +27,7 @@
         <el-col :lg="2" :md="2">
           <el-upload action="#" :http-request="requestUpload" :show-file-list="false" :before-upload="beforeUpload">
             <el-button size="small">
-              上传
+              选择
               <i class="el-icon-upload el-icon--right"></i>
             </el-button>
           </el-upload>
@@ -67,6 +68,8 @@ export default {
     return {
       // 是否显示弹出层
       open: false,
+      // 是否显示cropper
+      visible: false,
       // 弹出层标题
       title: "修改头像",
       options: {
@@ -83,6 +86,10 @@ export default {
     // 编辑头像
     editCropper() {
       this.open = true;
+    },
+    // 打开弹出层结束时的回调
+    modalOpened() {
+      this.visible = true;
     },
     // 覆盖默认的上传行为
     requestUpload() {
@@ -103,7 +110,7 @@ export default {
     // 上传预处理
     beforeUpload(file) {
       if (file.type.indexOf("image/") == -1) {
-        this.msgError("文件格式错误，请上传图片类型,如：JPG，PNG后缀的文件。");
+        this.$modal.msgError("文件格式错误，请上传图片类型,如：JPG，PNG后缀的文件。");
       } else {
         const reader = new FileReader();
         reader.readAsDataURL(file);
@@ -118,21 +125,48 @@ export default {
         let formData = new FormData();
         formData.append("avatarfile", data);
         uploadAvatar(formData).then(response => {
-          if (response.code === 200) {
-            this.open = false;
-            this.options.img = process.env.VUE_APP_BASE_API + response.imgUrl;
-            this.msgSuccess("修改成功");
-          } else {
-            this.msgError(response.msg);
-          }
-          this.$refs.cropper.clearCrop();
+          this.open = false;
+          this.options.img = process.env.VUE_APP_BASE_API + response.imgUrl;
+          store.commit('SET_AVATAR', this.options.img);
+          this.$modal.msgSuccess("修改成功");
+          this.visible = false;
         });
       });
     },
     // 实时预览
     realTime(data) {
       this.previews = data;
+    },
+    // 关闭窗口
+    closeDialog() {
+      this.options.img = store.getters.avatar
+      this.visible = false;
     }
   }
 };
 </script>
+<style scoped lang="scss">
+.user-info-head {
+  position: relative;
+  display: inline-block;
+  height: 120px;
+}
+
+.user-info-head:hover:after {
+  content: '+';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  color: #eee;
+  background: rgba(0, 0, 0, 0.5);
+  font-size: 24px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  cursor: pointer;
+  line-height: 110px;
+  border-radius: 50%;
+}
+</style>

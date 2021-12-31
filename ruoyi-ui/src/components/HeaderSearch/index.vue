@@ -12,7 +12,7 @@
       class="header-search-select"
       @change="change"
     >
-      <el-option v-for="item in options" :key="item.path" :value="item" :label="item.title.join(' > ')" />
+      <el-option v-for="option in options" :key="option.item.path" :value="option.item" :label="option.item.title.join(' > ')" />
     </el-select>
   </div>
 </template>
@@ -20,7 +20,7 @@
 <script>
 // fuse is a lightweight fuzzy-search module
 // make search results more in line with expectations
-import Fuse from 'fuse.js'
+import Fuse from 'fuse.js/dist/fuse.min.js'
 import path from 'path'
 
 export default {
@@ -70,7 +70,14 @@ export default {
       this.show = false
     },
     change(val) {
-      this.$router.push(val.path)
+      const path = val.path;
+      if(this.ishttp(val.path)) {
+        // http(s):// 路径新窗口打开
+        const pindex = path.indexOf("http");
+        window.open(path.substr(pindex, path.length), "_blank");
+      } else {
+        this.$router.push(val.path)
+      }
       this.search = ''
       this.options = []
       this.$nextTick(() => {
@@ -104,7 +111,7 @@ export default {
         if (router.hidden) { continue }
 
         const data = {
-          path: path.resolve(basePath, router.path),
+          path: !this.ishttp(router.path) ? path.resolve(basePath, router.path) : router.path,
           title: [...prefixTitle]
         }
 
@@ -134,6 +141,9 @@ export default {
       } else {
         this.options = []
       }
+    },
+    ishttp(url) {
+      return url.indexOf('http://') !== -1 || url.indexOf('https://') !== -1
     }
   }
 }
@@ -159,7 +169,7 @@ export default {
     display: inline-block;
     vertical-align: middle;
 
-    /deep/ .el-input__inner {
+    ::v-deep .el-input__inner {
       border-radius: 0;
       border: 0;
       padding-left: 0;

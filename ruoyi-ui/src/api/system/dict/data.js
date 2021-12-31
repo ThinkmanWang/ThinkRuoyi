@@ -20,7 +20,7 @@ export function getData(dictCode) {
 // 根据字典类型查询字典数据信息
 export function getDicts(dictType) {
   return request({
-    url: '/system/dict/data/dictType/' + dictType,
+    url: '/system/dict/data/type/' + dictType,
     method: 'get'
   })
 }
@@ -48,14 +48,5 @@ export function delData(dictCode) {
   return request({
     url: '/system/dict/data/' + dictCode,
     method: 'delete'
-  })
-}
-
-// 导出字典数据
-export function exportData(query) {
-  return request({
-    url: '/system/dict/data/export',
-    method: 'get',
-    params: query
   })
 }
