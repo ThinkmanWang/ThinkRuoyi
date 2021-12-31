@@ -1,16 +1,13 @@
 FROM maven as build-stage
 WORKDIR /app
 COPY . .
-#COPY ./src/main/resources/application.yml.oray /app/src/main/resources/application.yml
-#COPY ./src/main/resources/application-druid.yml.oray /app/src/main/resources/application-druid.yml
 
-RUN mvn clean package -Dmaven.test.skip=true
+mvn -B clean package -Dmaven.test.skip=true -Dautoconfig.skip -P prod
 RUN ls /app
 
-# 基础镜像
+
+
 FROM openjdk:8
-COPY --from=build-stage /app/target/ruoyi.jar ruoyi.jar
-
-ENV JAVA_OPTS="-Xms2048m -Xmx2048m -XX:PermSize=2048m -XX:MaxPermSize=2048m -XX:MaxNewSize=1024m"
-
-#ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -jar /ruoyi.jar > /dev/null 2>&1 &" ]
+WORKDIR /app
+COPY --from=build-stage /app/target/ruoyi.jar /app/ruoyi-admin.jar
+ENTRYPOINT ["/bin/sh", "-c", "java -Duser.timezone=Asia/Shanghai -Djava.security.egd=file:/dev/./urandom -jar /app/ruoyi-admin.jar"]
