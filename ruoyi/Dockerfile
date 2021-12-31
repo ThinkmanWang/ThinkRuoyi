@@ -9,5 +9,5 @@ RUN ls /app
 
 FROM openjdk:8
 WORKDIR /app
-COPY --from=build-stage /app/target/ruoyi.jar /app/ruoyi-admin.jar
+COPY --from=build-stage /app/ruoyi-admin/target/ruoyi-admin.jar /app/ruoyi-admin.jar
 ENTRYPOINT ["/bin/sh", "-c", "java -Duser.timezone=Asia/Shanghai -Djava.security.egd=file:/dev/./urandom -jar /app/ruoyi-admin.jar"]
