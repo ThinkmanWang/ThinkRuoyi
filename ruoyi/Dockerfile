@@ -2,7 +2,7 @@ FROM maven as build-stage
 WORKDIR /app
 COPY . .
 
-mvn -B clean package -Dmaven.test.skip=true -Dautoconfig.skip -P prod
+RUN mvn -B clean package -Dmaven.test.skip=true -Dautoconfig.skip -P prod
 RUN ls /app
 
 
