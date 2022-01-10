@@ -26,8 +26,8 @@ public class AuthController {
     @Autowired
     private TokenService tokenService;
 
-    @GetMapping("/token")
-    public AjaxResult helloWorld(@RequestParam(name = "appid", required = true, defaultValue = "") String szAppId
+    @RequestMapping("/token")
+    public AjaxResult token(@RequestParam(name = "appid", required = true, defaultValue = "") String szAppId
             , @RequestParam(name = "secret", required = true, defaultValue = "") String szSecret) {
         AjaxResult ajax = AjaxResult.success();
         // 生成令牌
