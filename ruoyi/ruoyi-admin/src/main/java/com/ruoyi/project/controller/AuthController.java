@@ -3,9 +3,11 @@ package com.ruoyi.project.controller;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.model.LoginUser;
+import com.ruoyi.framework.web.service.PermissionService;
 import com.ruoyi.framework.web.service.SysLoginService;
 import com.ruoyi.framework.web.service.TokenService;
 import com.ruoyi.framework.web.service.UserDetailsServiceImpl;
+import com.ruoyi.system.service.impl.SysRoleServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +27,12 @@ public class AuthController {
 
     @Autowired
     private TokenService tokenService;
+
+    @Autowired
+    private SysRoleServiceImpl sysRoleService;
+
+    @Autowired
+    private PermissionService permissionService;
 
     @RequestMapping("/token")
     public AjaxResult token(@RequestParam(name = "appid", required = true, defaultValue = "") String szAppId
