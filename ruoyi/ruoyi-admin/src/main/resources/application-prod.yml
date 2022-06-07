@@ -78,10 +78,3 @@ spring:
                 wall:
                     config:
                         multi-statement-allow: true
-
-cos:
-    accessKey: AKID5zc07UcT4OQBgtpUt1tVqvjGVUCdngIc
-    secretKey: 4rOedKlvnOimY3HEuJQHq89uOGsDI5bq
-    backetName: donations-1305256095
-    appId: 1305256095
-    regionId: ap-nanjing
